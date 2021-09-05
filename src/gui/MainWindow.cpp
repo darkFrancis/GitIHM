@@ -331,8 +331,10 @@ bool MainWindow::action(QStringList args, bool b_status /*= true*/)
     }
     else if(m_process->state() == QProcess::NotRunning && args.length() > 0)
     {
-        if(b_status) status("Lancement git " + args.at(0));
-        qLog->info("GIT | git", args.join(' '));
+        if(b_status)
+            status("Lancement git " + args.at(0));
+        if(!(ui->checkBox_autoRefresh->isChecked() && args.length() && args.at(0) == "status"))
+            qLog->info("GIT | git", args.join(' '));
         m_process->start("git", args);
         m_process->waitForFinished();
         m_error = m_process->readAllStandardError();
@@ -401,7 +403,8 @@ void MainWindow::updateStash()
  */
 void MainWindow::update_status()
 {
-    qLog->info("Mise à jour du status");
+    if(!ui->checkBox_autoRefresh->isChecked())
+        qLog->info("Mise à jour du status");
     QStringList tmp_select_stage = getSelected(ui->listWidget_staged, false);
     QStringList tmp_select_unstage = getSelected(ui->listWidget_unstaged, false);
     QStringList tmp_stage = getAllItems(ui->listWidget_staged, false);
@@ -560,7 +563,10 @@ void MainWindow::update_remote()
 void MainWindow::update_all()
 {
     qLog->info("Mise à jour globale");
-    status("Mise à jour");
+    if(!ui->checkBox_autoRefresh->isChecked())
+    {
+        status("Mise à jour");
+    }
     if(!m_bInGitDir)
     {
         QMessageBox::critical(this, "Erreur", "Veuillez sélectionner un dossier Git valide");
