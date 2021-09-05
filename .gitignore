@@ -1,0 +1,14 @@
+# Dossiers à ignorer pour git
+
+doc/
+build*/
+bin/
+out/
+
+# Fichiers à ignorer pour git
+
+*.err
+*.log
+*.user*
+*.autosave
+*.stash
