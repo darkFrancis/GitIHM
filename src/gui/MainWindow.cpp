@@ -234,7 +234,7 @@ void MainWindow::on_pushButton_gitk_clicked()
     {
         QProcess process;
         process.setWorkingDirectory(qCtx->currentGitDir());
-        process.start("gitk --all --date-order");
+        process.startDetached("gitk --all --date-order");
         process.waitForFinished();
     }
     else
