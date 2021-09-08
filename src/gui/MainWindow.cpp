@@ -232,10 +232,7 @@ void MainWindow::on_pushButton_gitk_clicked()
     qLog->info("Demande d'ouverture Gitk sur le dossier", qCtx->currentGitDir());
     if(m_bInGitDir)
     {
-        QProcess process;
-        process.setWorkingDirectory(qCtx->currentGitDir());
-        process.startDetached("gitk --all --date-order");
-        process.waitForFinished();
+        QProcess::startDetached("gitk", QStringList() << "--all" << "--date-order", qCtx->currentGitDir());
     }
     else
     {
