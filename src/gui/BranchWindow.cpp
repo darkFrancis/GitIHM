@@ -170,24 +170,54 @@ void BranchWindow::on_pushButton_remove_clicked()
     if(branch != "") emit action(QStringList() << "branch" << "-d" << branch);
 }
 
+bool _check_branch_global_name(const QString& name)
+{
+    if(name.contains("..") ||
+            name.endsWith(".lock") ||
+            name.endsWith("/") ||
+            name.contains("/.") ||
+            name.startsWith('.') ||
+            name.contains("@{"))
+        return false;
+    return true;
+}
+
+bool _check_branch_name_char(char ch)
+{
+        if(unsigned(ch) <= ' ' ||
+                ch == '~'  ||
+                ch == '^'  ||
+                ch == ':'  ||
+                ch == '\\' ||
+                ch == '?'  ||
+                ch == '['  ||
+                ch == '*')
+                return false;
+        return true;
+}
+
 /**
  * @param name Nom de branche Git
  * @return Booléen de vérification
  *
- * Vérifie que le nom de la branche ne contient que des caractères alphanumériques.
+ * Vérifie que le nom de la branche ne contient que des caractères autorisés.
  * Sinon, affiche une popup d'erreur.
  */
 bool BranchWindow::check_branch_name(QString name)
 {
-    for(int i = 0; i < name.length(); i++)
+    auto raiseErr = [this]() {
+        QMessageBox::warning(this,
+                             "Attention",
+                             "Nom de branche impossible !");
+        return false;
+    };
+    if(!_check_branch_global_name(name))
+        return raiseErr();
+    for(int i = 1; i < name.length()-1; i++)
     {
-        if(!name[i].isLetterOrNumber())
+        if(!_check_branch_name_char(name[i].toLatin1()))
         {
-            QMessageBox::warning(this,
-                                 "Attention",
-                                 "Un nom de branche ne peut contenir que des "
-                                 "caractères alphanumériques !");
-            return false;
+            return raiseErr();
         }
     }
     return true;
